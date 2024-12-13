@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/form"
 import { useState } from "react"
 import Link  from "next/link"
-
+import { createAccount } from "@/lib/actions/user.action"
+import OtpModal from "./OTPModal"
 type FormType = "sign-in" | "sign-up"
 
 const authFormSchema = (formType:FormType) => {
@@ -29,6 +30,7 @@ const authFormSchema = (formType:FormType) => {
 const AuthForm = ({ type }: { type: FormType }) => {
     const [isLoading, setIsLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
+    const [accountId, setAccountId] = useState(null)
     const formSchema = authFormSchema(type)
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -39,7 +41,20 @@ const AuthForm = ({ type }: { type: FormType }) => {
 
     // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        console.log(values)
+        setIsLoading(true)
+        setErrorMessage("")
+        try {
+            const user = await createAccount({
+                fullName:values.fullName || '',
+                email:values.email
+            })
+            setAccountId(user.accountId) 
+        } catch (error) {
+            setErrorMessage("Failed to create account")
+        }finally{
+            setIsLoading(false)
+        }
+      
     }
 
     return <div>
@@ -102,6 +117,9 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 </form>
             </Form>
             {/* OTP */}
+            {accountId && (
+                <OtpModal email = {form.getValues("email")} accountId={accountId} />
+            )}
         </>
     </div>
 }
