@@ -110,3 +110,17 @@ export const signUserOut = async () => {
         redirect("/sign-in")
     }
 }
+
+export const signInUser = async ({email}:{email:string}) => {
+    try {
+        const existingUser = await getUserByEmail(email)
+
+        if(existingUser){
+            await  sendEmailOtp({email})
+            return parseStringify({accountId:existingUser.accountId})
+        }
+        return parseStringify({accountId:null,error:"User not found"})
+    } catch (error) {
+        handleError(error,"Failed to sign in user")
+    }
+}

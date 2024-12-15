@@ -18,6 +18,7 @@ import { useState } from "react"
 import Link  from "next/link"
 import { createAccount } from "@/lib/actions/user.action"
 import OtpModal from "./OTPModal"
+import { signInUser } from "@/lib/actions/user.action"
 type FormType = "sign-in" | "sign-up"
 
 const authFormSchema = (formType:FormType) => {
@@ -44,10 +45,11 @@ const AuthForm = ({ type }: { type: FormType }) => {
         setIsLoading(true)
         setErrorMessage("")
         try {
-            const user = await createAccount({
+            const user = type === 'sign-up'? await createAccount({
                 fullName:values.fullName || '',
-                email:values.email
+                email:values.email,
             })
+            :await signInUser({email:values.email})
             setAccountId(user.accountId) 
         } catch (error) {
             setErrorMessage("Failed to create account")
