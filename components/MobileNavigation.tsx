@@ -16,6 +16,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import FileUploader from '@/components/FileUploder'
+import { signUserOut } from "@/lib/actions/user.action";
 
 interface Props {
   ownerId: string;
@@ -91,8 +92,8 @@ const MobileNavigation: React.FC<Props> = ({ ownerId, accountId, fullName, email
             <Button
               type="button"
               className="mobile-sign-out-button"
-              onClick={() => {
-                console.log("Log out action");
+              onClick={async () => {
+                await signUserOut();
               }}
             >
               <Image
